@@ -4,9 +4,15 @@ import com.zzgs.domain.User;
 import com.zzgs.services.UserServices;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Author:   Tang
@@ -41,7 +47,10 @@ public class ShiroRealm extends AuthorizingRealm {
         //密码的比较 是shiro内部进行比较
         Object principal = username;
         Object credentials = user.getPassword(); //数据库中查询出的密码
-        AuthenticationInfo info = new SimpleAuthenticationInfo(principal,credentials,super.getName());
+        //盐值加密
+        ByteSource credentialsSalt = ByteSource.Util.bytes(username);
+        //AuthenticationInfo info = new SimpleAuthenticationInfo(principal,credentials,super.getName());
+        AuthenticationInfo info = new SimpleAuthenticationInfo(principal,credentials,credentialsSalt,super.getName());
         //如果用户名存在但是密码错误 底层会抛出 抛出IncorrectCredentialsException
         return info;
     }
@@ -53,6 +62,25 @@ public class ShiroRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
+        //得到用户名信息
+        String username = (String) principalCollection.getPrimaryPrincipal();
+        //给当前的用户赋予相应的角色
+        Set<String> roles = userServices.findRoleByUserName(username);
+        if(roles.contains("admin")){
+            //管理员是特殊角色
+            roles = userServices.findRoles();
+        }
+        AuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+        return info;
+    }
+
+    public static void main(String[] args) {
+        String username = "mao";
+        Object credentials = "1234";
+        String hashAlgorithmName = "MD5";
+        Object salt = ByteSource.Util.bytes(username);
+        int hashIterations = 10;
+        Object result = new SimpleHash(hashAlgorithmName,credentials,salt,hashIterations);
+        System.out.println(result);
     }
 }

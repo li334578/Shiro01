@@ -11,6 +11,6 @@
     <title>Title</title>
 </head>
 <body>
-<h1>未认证</h1>
+<h1>没有相应的访问权限</h1>
 </body>
 </html>

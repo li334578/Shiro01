@@ -6,6 +6,8 @@ import com.zzgs.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 /**
  * Author:   Tang
  * Date:     2019/10/2 10:33
@@ -22,5 +24,15 @@ public class UserServicesImpl implements UserServices {
     public User findByUserName(String username) {
 
         return usersDao.findByUserName(username);
+    }
+
+    @Override
+    public Set<String> findRoleByUserName(String username) {
+        return usersDao.findRoleByUserName(username);
+    }
+
+    @Override
+    public Set<String> findRoles() {
+        return usersDao.findRoles();
     }
 }

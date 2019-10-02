@@ -20,6 +20,14 @@
 
     <!-- 3 自定义Realm -->
     <bean id="jdbcRealm" class="com.zzgs.shiro.ShiroRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <!--加密的名称-->
+                <property name="hashAlgorithmName" value="MD5"/>
+                <!--加密的次数-->
+                <property name="hashIterations" value="10"></property>
+            </bean>
+        </property>
     </bean>
     <!--
           <property name="credentialsMatcher">
@@ -89,10 +97,9 @@
                 /images/**=anon
                 /js/**=anon
                 /login/exit = logout
-                /list.jsp=anon
-                <!--/student.jsp=roles[stu]
+                /student.jsp=roles[stu]
                 /teacher.jsp=roles[tea]
-                /list.jsp=roles[stu,tea]-->
+                /list.jsp=roles[stu,tea]
                 /** = authc
             </value>
         </property>
